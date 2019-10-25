@@ -4,44 +4,45 @@
 #include <string>
 #include <sstream>
 
+class Bits_Array
+{
+	std::vector<bool> bits_array;
+public:
+	Bits_Array() {}
+
+	void set_size(size_t& m)
+	{
+		bits_array.resize(m);
+	}
+
+	bool value_of(size_t index)
+	{
+		return bits_array[index];
+	}
+
+	bool find(size_t& index)
+	{
+		return bits_array[index];
+	}
+
+	void add(size_t index)
+	{
+		bits_array[index] = true;
+	}
+
+	std::string print()
+	{
+		std::string result = "";
+		for (size_t i = 0; i < bits_array.size(); i++)
+		{
+			result += std::to_string(bits_array[i]);
+		}
+		return result;
+	}
+};
+
 class Bloom_Filter 
 {
-	class Bits_Array
-	{
-		std::vector<bool> bits_array;
-	public:
-		Bits_Array() {}
-
-		void set_size(size_t &m)
-		{
-			bits_array.resize(m);
-		}
-
-		bool value_of(size_t &index) 
-		{
-			return bits_array[index];
-		}
-
-		bool find (size_t &index)
-		{
-			return bits_array[index];
-		}
-
-		void add(size_t &index)
-		{
-			bits_array[index] = true;
-		}
-
-		std::string print() 
-		{
-			std::string result = "";
-			for (size_t i = 0; i < bits_array.size(); i++)
-			{
-				result += std::to_string(bits_array[i]);
-			}
-			return result;
-		}
-	};
 	
 	size_t n, hashs, m;
 	double P;
@@ -63,7 +64,7 @@ public:
 		if (set_n <= 0 || (set_P >= 1 || set_P <= 0) || (-1.0 * std::log2(set_P) < 1)) throw std::logic_error("error");
 		else 
 		{
-			n = static_cast<unsigned long long>(set_n);
+			n = static_cast<size_t>(set_n);
 			P = set_P;
 			double logs = - static_cast<double>(std::log2(P) / std::log(2.0));
 			m = static_cast<size_t>(std::round(static_cast<double>(n) * logs));
@@ -75,14 +76,19 @@ public:
 		}	
 	}
 
-	void Add(unsigned long long k)
+	size_t make_hash_index(size_t i, unsigned long long K) 
+	{
+		unsigned long long value = static_cast<unsigned long long>(i + 1.0) * static_cast<unsigned long long> (K % M) + static_cast<unsigned long long>(primes[i]);
+		value = (value % M) % static_cast<unsigned long long> (m);
+		size_t index = static_cast<size_t>(value);
+		return index;
+	}
+
+	void Add(unsigned long long K)
 	{
 		for (size_t i = 0; i < hashs; i++)
 		{
-			unsigned long long value = static_cast<unsigned long long>(i + 1.0) * static_cast<unsigned long long> (k % M) + static_cast<unsigned long long>(primes[i]);
-			value = (value % M) % static_cast<unsigned long long> (m);
-			size_t index = static_cast<size_t>(value);
-			bits_arr.add(index);
+			bits_arr.add(make_hash_index(i, K));
 		}
 	}
 
@@ -93,15 +99,10 @@ public:
 
 	bool search(unsigned long long K) 
 	{
-		unsigned long long value;
-		size_t index;
 		if (K < 0) throw std::logic_error("error");
 		for (size_t i = 0; i < hashs; i++)
 		{
-			value = static_cast<unsigned long long>(i + 1) * static_cast<unsigned long long> (K % M) + static_cast<unsigned long long>(primes[i]);
-			value = (value % M) % static_cast<unsigned long long> (m);
-			index = static_cast<size_t>(value);
-			if (bits_arr.value_of(index) == false) return false;
+			if (bits_arr.value_of(make_hash_index(i, K)) == false) return false;
 		}
 		return true;
 	}

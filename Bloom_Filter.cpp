@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <cmath>
 #include <string>
@@ -43,7 +43,6 @@ public:
 
 class Bloom_Filter 
 {
-	
 	size_t n, hashs, m;
 	double P;
 	unsigned long long M = 2147483647;
@@ -110,7 +109,6 @@ public:
 		return true;
 	}
 };
-
 
 int main()
 {

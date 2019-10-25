@@ -59,7 +59,7 @@ public:
 		P = 0;
 	}
 
-	std::string set (long long set_n, long double set_P)
+	void set (long long set_n, long double set_P)
 	{
 		if (set_n <= 0 || (set_P >= 1 || set_P <= 0) || (-1.0 * std::log2(set_P) < 1)) throw std::logic_error("error");
 		else 
@@ -70,10 +70,13 @@ public:
 			m = static_cast<size_t>(std::round(static_cast<double>(n) * logs));
 			bits_arr.set_size(m);
 			hashs = static_cast<size_t>(std::round(-std::log2(P)));
-			std::string str = std::to_string(m);
-			str +=' ' + std::to_string(hashs);
-			return str;
 		}	
+	}
+
+	std::pair<size_t, size_t> &get_m_hashs() 
+	{
+		std::pair<size_t, size_t> params = { m,hashs };
+		return params;
 	}
 
 	size_t make_hash_index(size_t i, unsigned long long K) 
@@ -124,7 +127,9 @@ int main()
 			{
 				int n = std::stoi(temp_2);
 				double P = std::stod(temp_3);
-				output += Filter.set(n, P) + '\n'; 
+				Filter.set(n, P);
+				std::pair<size_t, size_t> params = Filter.get_m_hashs();
+				output += std::to_string(params.first) + ' ' + std::to_string(params.second) + '\n';
 				break;
 			}
 			else throw std::logic_error("error");
